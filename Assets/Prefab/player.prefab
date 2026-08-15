@@ -291,5 +291,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkSpeed: 5
   sprintSpeed: 8
-  jumpForce: 4.3
+  jumpForce: 4
   mouseSensitivity: 0.15
