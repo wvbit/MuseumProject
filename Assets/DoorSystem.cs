@@ -1,68 +1,82 @@
 using UnityEngine;
-using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 public class DoorSystem : MonoBehaviour
 {
     public float openAngle = 90f;
-    public float speed = 3f;
+    public float openSpeed = 3f;
+    public float distance = 3f;
+    public Camera playerCamera;
 
-    private bool playerNear = false;
-    private bool isOpen = false;
-
-    private Quaternion closedRotation;
-    private Quaternion openRotation;
+    bool open;
+    Quaternion closed, opened;
 
     void Start()
     {
-        closedRotation = transform.localRotation;
-        openRotation = closedRotation * Quaternion.Euler(0, openAngle, 0);
+        if (playerCamera == null)
+            playerCamera = Camera.main;
+
+        closed = transform.localRotation;
+        opened = closed * Quaternion.Euler(0, openAngle, 0);
     }
 
     void Update()
     {
-        if (playerNear && Input.GetKeyDown(KeyCode.E))
-        {
-            isOpen = !isOpen;
-        }
+        transform.localRotation = Quaternion.Slerp(
+            transform.localRotation,
+            open ? opened : closed,
+            Time.deltaTime * openSpeed
+        );
 
-        if (isOpen)
-            transform.localRotation = Quaternion.Slerp(
-                transform.localRotation,
-                openRotation,
-                Time.deltaTime * speed
-            );
-        else
-            transform.localRotation = Quaternion.Slerp(
-                transform.localRotation,
-                closedRotation,
-                Time.deltaTime * speed
-            );
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
+        if (Keyboard.current != null &&
+            Keyboard.current.eKey.wasPressedThisFrame &&
+            playerCamera != null)
         {
-            playerNear = true;
-        }
-    }
+            if (Physics.Raycast(
+                playerCamera.transform.position,
+                playerCamera.transform.forward,
+                out RaycastHit hit,
+                distance))
+            {
+                DoorSystem door =
+                    hit.collider.GetComponentInParent<DoorSystem>();
 
-    void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerNear = false;
+                if (door == this)
+                    open = !open;
+            }
         }
     }
 
     void OnGUI()
     {
-        if (playerNear && !isOpen)
+        if (playerCamera == null)
+            return;
+
+        if (Physics.Raycast(
+            playerCamera.transform.position,
+            playerCamera.transform.forward,
+            out RaycastHit hit,
+            distance))
         {
-            GUI.Label(
-                new Rect(Screen.width / 2 - 100, Screen.height - 150, 250, 50),
-                "Press E to open"
-            );
+            DoorSystem door =
+                hit.collider.GetComponentInParent<DoorSystem>();
+
+            if (door == this)
+            {
+                string text = open
+                    ? "PRESS E TO CLOSE"
+                    : "PRESS E TO OPEN";
+
+                GUI.Label(
+                    new Rect(
+                        Screen.width / 2 - 150,
+                        Screen.height - 180,
+                        300,
+                        50
+                    ),
+                    text
+                );
+            }
         }
     }
 }

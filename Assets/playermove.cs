@@ -18,12 +18,23 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 movement;
     private float mouseX;
+    private float playerRotation;
+
     private bool isGrounded;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         capsule = GetComponent<CapsuleCollider>();
+
+        // اللاعب لا يدور بسبب الاصطدامات أو الفيزياء
+        rb.constraints = RigidbodyConstraints.FreezeRotationX |
+                         RigidbodyConstraints.FreezeRotationY |
+                         RigidbodyConstraints.FreezeRotationZ;
+
+        rb.angularVelocity = Vector3.zero;
+
+        playerRotation = transform.eulerAngles.y;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -35,15 +46,24 @@ public class PlayerMovement : MonoBehaviour
         float z = 0f;
 
         // Movement
-        if (Keyboard.current.wKey.isPressed) z = 1f;
-        if (Keyboard.current.sKey.isPressed) z = -1f;
-        if (Keyboard.current.aKey.isPressed) x = -1f;
-        if (Keyboard.current.dKey.isPressed) x = 1f;
+        if (Keyboard.current.wKey.isPressed)
+            z = 1f;
+
+        if (Keyboard.current.sKey.isPressed)
+            z = -1f;
+
+        if (Keyboard.current.aKey.isPressed)
+            x = -1f;
+
+        if (Keyboard.current.dKey.isPressed)
+            x = 1f;
 
         movement = new Vector3(x, 0f, z).normalized;
 
         // Mouse
-        mouseX += Mouse.current.delta.ReadValue().x * mouseSensitivity;
+        float mouseInput = Mouse.current.delta.ReadValue().x;
+
+        playerRotation += mouseInput * mouseSensitivity;
 
         // Jump
         if (Keyboard.current.spaceKey.wasPressedThisFrame && isGrounded)
@@ -54,7 +74,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Walk or Sprint
+        // Walk / Sprint
         float currentSpeed = Keyboard.current.leftShiftKey.isPressed
             ? sprintSpeed
             : walkSpeed;
@@ -68,14 +88,16 @@ public class PlayerMovement : MonoBehaviour
             moveDirection * currentSpeed * Time.fixedDeltaTime
         );
 
-        // Rotate player
-        Quaternion rotation = Quaternion.Euler(0f, mouseX, 0f);
-        rb.MoveRotation(rb.rotation * rotation);
+        // دوران اللاعب بالماوس فقط
+        Quaternion rotation =
+            Quaternion.Euler(0f, playerRotation, 0f);
 
-        // Reset mouse movement
-        mouseX = 0f;
+        rb.MoveRotation(rotation);
 
-        // Check ground
+        // منع أي دوران ناتج عن الاصطدام
+        rb.angularVelocity = Vector3.zero;
+
+        // Check Ground
         CheckGround();
     }
 
@@ -91,4 +113,4 @@ public class PlayerMovement : MonoBehaviour
             distance
         );
     }
-} 
+}
