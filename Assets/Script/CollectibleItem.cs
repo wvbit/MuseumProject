@@ -1,45 +1,154 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class CollectibleItem : MonoBehaviour
 {
-
-
-    [SerializeField] private GameObject text;
-    [Header("تحديد هل هذا العنصر هو الصحيح؟")]
+    [Header("Medicine")]
     public bool isCorrect = false;
 
-    private void OnTriggerEnter(Collider other)
+    [Header("Interaction")]
+    public float interactionDistance = 2.5f;
+
+    private Transform player;
+    private bool collected = false;
+    private bool showResult = false;
+    private string resultMessage = "";
+
+    void Start()
     {
-        // التأكد من أن الذي اصطدم بالعنصر هو اللاعب
-        if (other.CompareTag("Player"))
+        GameObject playerObject = GameObject.FindWithTag("Player");
+
+        if (playerObject != null)
         {
-            text.SetActive(true);
-            if (isCorrect)
-            {
-                WinGame();
-            }
-            else
-            {
-                RestartGame();
-            }
+            player = playerObject.transform;
+        }
+        else
+        {
+            Debug.LogError("Player Tag is missing!");
         }
     }
-    private void OnTriggerExit(Collider other)
+
+    void Update()
     {
-        text.SetActive(false);
+        if (player == null || collected)
+            return;
+
+        float distance =
+            Vector3.Distance(player.position, transform.position);
+
+        if (distance <= interactionDistance &&
+            Keyboard.current != null &&
+            Keyboard.current.eKey.wasPressedThisFrame)
+        {
+            TakeMedicine();
+        }
     }
 
-    void WinGame()
+    void TakeMedicine()
     {
-        Debug.Log("فوز! لقد اخترت العنصر الصحيح.");
-        // أضف هنا كود الفوز (مثل فتح مرحلة جديدة أو إظهار واجهة الفوز)
+        collected = true;
+
+        // يخفي شكل الدواء
+        foreach (Renderer r in GetComponentsInChildren<Renderer>())
+        {
+            r.enabled = false;
+        }
+
+        showResult = true;
+
+        if (isCorrect)
+        {
+            resultMessage = "YOU WIN!";
+        }
+        else
+        {
+            resultMessage = "GAME OVER";
+            StartCoroutine(RestartGame());
+        }
     }
 
-    void RestartGame()
+    IEnumerator RestartGame()
     {
-        Debug.Log("إجابة خاطئة! إعادة تشغيل المرحلة...");
-        // إعادة تحميل المشهد الحالي
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        yield return new WaitForSeconds(2f);
+
+        SceneManager.LoadScene(
+            SceneManager.GetActiveScene().name
+        );
+    }
+
+    void OnGUI()
+    {
+        if (player == null)
+            return;
+
+        float distance =
+            Vector3.Distance(player.position, transform.position);
+
+        GUIStyle promptStyle = new GUIStyle(GUI.skin.label);
+        promptStyle.alignment = TextAnchor.MiddleCenter;
+        promptStyle.fontSize = 26;
+        promptStyle.normal.textColor = Color.white;
+
+        // يظهر فقط عند الاقتراب من الدواء
+        if (!collected && distance <= interactionDistance)
+        {
+            GUI.Box(
+                new Rect(
+                    Screen.width / 2 - 180,
+                    Screen.height - 120,
+                    360,
+                    50
+                ),
+                ""
+            );
+
+            GUI.Label(
+                new Rect(
+                    Screen.width / 2 - 180,
+                    Screen.height - 120,
+                    360,
+                    50
+                ),
+                "Press E to Take Medicine",
+                promptStyle
+            );
+        }
+
+        // شاشة الفوز أو الخسارة
+        if (showResult)
+        {
+            GUIStyle resultStyle =
+                new GUIStyle(GUI.skin.label);
+
+            resultStyle.alignment =
+                TextAnchor.MiddleCenter;
+
+            resultStyle.fontSize = 60;
+            resultStyle.normal.textColor =
+                Color.white;
+
+            GUI.Box(
+                new Rect(
+                    0,
+                    Screen.height / 2 - 100,
+                    Screen.width,
+                    200
+                ),
+                ""
+            );
+
+            GUI.Label(
+                new Rect(
+                    0,
+                    Screen.height / 2 - 100,
+                    Screen.width,
+                    200
+                ),
+                resultMessage,
+                resultStyle
+            );
+        }
     }
 }
