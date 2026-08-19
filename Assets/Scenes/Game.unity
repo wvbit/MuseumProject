@@ -2627,7 +2627,6 @@ MonoBehaviour:
   player: {fileID: 4975970119882427833}
   animator: {fileID: 813698283}
   playerHealth: {fileID: 7362153995217383123}
-  gameOverUI: {fileID: 479694287}
   detectionRadius: 12
   attackRange: 2
   patrolRadius: 20
@@ -2635,6 +2634,7 @@ MonoBehaviour:
   patrolIdleTime: 3
   rotationSpeed: 7
   attackDuration: 1
+  damageAmount: 50
 --- !u!95 &813698283
 Animator:
   serializedVersion: 7
@@ -4878,7 +4878,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Sample text
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5506,8 +5506,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 4975970119882427833}
   animator: {fileID: 95000011179404154}
-  playerHealth: {fileID: 0}
-  gameOverUI: {fileID: 0}
+  playerHealth: {fileID: 7362153995217383123}
   detectionRadius: 12
   attackRange: 2
   patrolRadius: 6
@@ -5515,6 +5514,7 @@ MonoBehaviour:
   patrolIdleTime: 3
   rotationSpeed: 7
   attackDuration: 1
+  damageAmount: 50
 --- !u!195 &1782026038
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -6314,6 +6314,81 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1291821140}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2045500816
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2045500817}
+  - component: {fileID: 2045500819}
+  - component: {fileID: 2045500818}
+  m_Layer: 5
+  m_Name: LoseScreen
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &2045500817
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2045500816}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2066208436}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -2194.0254, y: -665.26825}
+  m_SizeDelta: {x: 2258.8286, y: 909.7766}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2045500818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2045500816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: b9d16314dab500440be350728321ec6e, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &2045500819
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2045500816}
+  m_CullTransparentMesh: 1
 --- !u!1 &2066208432
 GameObject:
   m_ObjectHideFlags: 0
@@ -6410,6 +6485,7 @@ RectTransform:
   m_Children:
   - {fileID: 1685991774}
   - {fileID: 479694290}
+  - {fileID: 2045500817}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -81801,6 +81877,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  loseScreen: {fileID: 2045500816}
 --- !u!20 &7553781921565111611
 Camera:
   m_ObjectHideFlags: 0
