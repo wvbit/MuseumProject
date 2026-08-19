@@ -63,19 +63,8 @@ public class DoorSystem : MonoBehaviour
 
             if (door == this)
             {
-                string text = open
-                    ? "PRESS E TO CLOSE"
-                    : "PRESS E TO OPEN";
+               
 
-                GUI.Label(
-                    new Rect(
-                        Screen.width / 2 - 150,
-                        Screen.height - 180,
-                        300,
-                        50
-                    ),
-                    text
-                );
             }
         }
     }
