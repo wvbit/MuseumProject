@@ -13,12 +13,17 @@ public class PlayerMovement : MonoBehaviour
     [Header("Mouse")]
     public float mouseSensitivity = 0.15f;
 
+    // الجديد فقط
+    public Transform playerCamera;
+    public float maxLookAngle = 80f;
+
     private Rigidbody rb;
     private CapsuleCollider capsule;
 
     private Vector3 movement;
-    private float mouseX;
+
     private float playerRotation;
+    private float cameraRotation;
 
     private bool isGrounded;
 
@@ -61,9 +66,27 @@ public class PlayerMovement : MonoBehaviour
         movement = new Vector3(x, 0f, z).normalized;
 
         // Mouse
-        float mouseInput = Mouse.current.delta.ReadValue().x;
+        Vector2 mouseInput = Mouse.current.delta.ReadValue();
 
-        playerRotation += mouseInput * mouseSensitivity;
+        // يمين ويسار
+        playerRotation += mouseInput.x * mouseSensitivity;
+
+        // فوق وتحت
+        cameraRotation -= mouseInput.y * mouseSensitivity;
+
+        // منع الكاميرا من الانقلاب
+        cameraRotation = Mathf.Clamp(
+            cameraRotation,
+            -maxLookAngle,
+            maxLookAngle
+        );
+
+        // تحريك الكاميرا فوق وتحت
+        if (playerCamera != null)
+        {
+            playerCamera.localRotation =
+                Quaternion.Euler(cameraRotation, 0f, 0f);
+        }
 
         // Jump
         if (Keyboard.current.spaceKey.wasPressedThisFrame && isGrounded)
@@ -88,7 +111,7 @@ public class PlayerMovement : MonoBehaviour
             moveDirection * currentSpeed * Time.fixedDeltaTime
         );
 
-        // دوران اللاعب بالماوس فقط
+        // دوران اللاعب يمين ويسار
         Quaternion rotation =
             Quaternion.Euler(0f, playerRotation, 0f);
 

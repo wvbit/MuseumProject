@@ -77023,6 +77023,8 @@ MonoBehaviour:
   sprintSpeed: 8
   jumpForce: 4
   mouseSensitivity: 0.15
+  playerCamera: {fileID: 2624504257871413541}
+  maxLookAngle: 80
 --- !u!4 &4975970119882427833
 Transform:
   m_ObjectHideFlags: 0
